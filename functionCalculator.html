@@ -23,51 +23,38 @@
             </tr>
             <tr>
                 <td><label for="valuestep">Step for increasing value of X:</label></td>
-                <td><input type="number" id="valuestep" name="valuestep" min="1" required></td>
+                <td><input type="number" id="valuestep" name="valuestep" required></td>
             </tr>
             <tr>
-                <td colspan="2"><input type="submit" value="Submit" onclick="getValues(event)"></td>
+                <td colspan="2"><input type="submit" value="Calculate" onclick="getValues(event)"></td>
             </tr>
         </table>
     </form>
+    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+        <canvas id="myChart"></canvas>
+    </div>
     <output id="functionvalues"></output>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.5.1/math.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    //ensin luodaan tyhjät taulukot, jotta ne näkyy molempiin funktioihin
     let valuesForX = [];
     let functionValues = [];
     let output = document.getElementById("functionvalues");
+    let myChart = null;
 
     function getValues() {
+        //kun klikataan submit, tyhjennetään outputin tekstit sekä luodut taulukot ja haetaan annettu funktio
         output.innerText = "";
         valuesForX = [];
         functionValues = [];
         let errors = [];
-        let inputFunction = document.getElementById("functioninput").value;
-        
-        function checkValue(value) {
-            if (isNaN(parseFloat(value))) {
-                errors.push("Give the value for X and increase in numbers");
-            }
-        }
 
-        checkValue(document.getElementById("startvalue").value);
-        checkValue(document.getElementById("endvalue").value);
-        checkValue(document.getElementById("valuestep").value);
-
+        let inputFunction = document.getElementById("functioninput").value
         let startValue = parseFloat(document.getElementById("startvalue").value);
         let endValue = parseFloat(document.getElementById("endvalue").value);
         let stepValue = parseFloat(document.getElementById("valuestep").value);
-
-        if (startValue >= endValue) {
-            errors.push("Starting value of X should be smaller than ending value");
-        }
-
-        while (startValue <= endValue) {
-            valuesForX.push(startValue);
-            //console.log(startvalue);
-            startValue += stepValue;
-        }
 
         if (errors.length > 0) {
             for (error of errors) {
@@ -76,27 +63,68 @@
             }
         } else
         {
+            while (startValue <= endValue) {
+            valuesForX.push(startValue);
+            //console.log(`startvalue = ${startvalue}`);
+            startValue += stepValue;
+            }
+
             for (let x of valuesForX) {
-            console.log(x)
-            let funct = inputFunction.replace(/x/gi, x);
-            try {
-                let value = math.evaluate(funct).toFixed(2);
-                functionValues.push(value);
-            }
-            catch {
-                output.innerText = "Check the given function";
-                output.style.color = "red";
-            }
-        }
+                //console.log(`x = ${x}`);
+                let funct = inputFunction.replace(/x/gi, x);
 
-        for (let y in functionValues) {
-            output.innerText += `y(${valuesForX[y]}) = ${functionValues[y]}\n`;
-            output.style.color = "black";
+                try {
+                    let value = math.evaluate(funct).toFixed(2);
+                    //console.log(`value = ${value}`);
+                    functionValues.push(value);
+                }
+                catch {
+                    output.innerText = "Check the given function";
+                    output.style.color = "red";
+                }
+            };
+            
+            for (let y in functionValues) {
+                output.innerText += `y(${valuesForX[y]}) = ${functionValues[y]}\n`;
+                output.style.color = "black";
+             }
         }
+        
+        if (functionValues.length > 0) {
+            createChart();
         }
-
+        
         event.preventDefault();
         return false;
     };
+
+    function createChart() {
+        const ctx = document.getElementById('myChart');
+        if (myChart != null) {
+            myChart.destroy();
+        }
+
+        myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: valuesForX,
+            datasets: [{
+            label: 'Function values',
+            data: functionValues,
+            borderWidth: 1,
+            lineTension: 0.3
+            }]
+        },
+        options: {
+            bezierCurve : true,
+            scales: {
+            y: {
+                beginAtZero: true
+            }
+            }
+        }
+        });
+    }
+    //createChart();
 </script>
 </html>
