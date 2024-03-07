@@ -51,10 +51,44 @@
         functionValues = [];
         let errors = [];
 
-        let inputFunction = document.getElementById("functioninput").value
-        let startValue = parseFloat(document.getElementById("startvalue").value);
-        let endValue = parseFloat(document.getElementById("endvalue").value);
-        let stepValue = parseFloat(document.getElementById("valuestep").value);
+        let inputFunction = document.getElementById("functioninput").value   
+        let startValue = document.getElementById("startvalue").value;
+        let endValue = document.getElementById("endvalue").value;
+        let stepValue = document.getElementById("valuestep").value;
+
+        //virheentarkistus toimii, saisiko tätä yksinkertaistettua?
+
+        function validateValues(startValue, endValue, stepValue, inputFunction) {
+            let start = parseFloat(startValue);
+            let end = parseFloat(endValue);
+            let step = parseFloat(stepValue);
+
+            if(isNaN(start)) {
+                errors.push("Give a numerical value for start X range");
+            }
+            if(isNaN(end)) {
+                errors.push("Give a numerical value for end X range");
+            }
+            if(isNaN(step)) {
+                errors.push("Give a numerical value for step of X increase");
+            }
+
+            if(start > end) {
+                errors.push("Starting value for X should be smaller than ending value");
+            }
+
+            try {
+                let funct = inputFunction.replace(/x/gi, 2)
+                let value = math.evaluate(funct)
+            }
+            catch {
+                errors.push("Give a valid function with variable X")
+            }
+        }
+
+        validateValues(startValue, endValue, stepValue, inputFunction);        
+        
+        output.innerText += errors.length
 
         if (errors.length > 0) {
             for (error of errors) {
@@ -63,10 +97,15 @@
             }
         } else
         {
-            while (startValue <= endValue) {
-            valuesForX.push(startValue);
+            //tässä vielä muutetaan floateiksi?
+            let floatStart = parseFloat(startValue);
+            let floatEnd = parseFloat(endValue);
+            let floatStep = parseFloat(stepValue);
+
+            while (floatStart <= floatEnd) {
+            valuesForX.push(floatStart);
             //console.log(`startvalue = ${startvalue}`);
-            startValue += stepValue;
+            floatStart += floatStep;
             }
 
             for (let x of valuesForX) {
