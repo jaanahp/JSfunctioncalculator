@@ -23,7 +23,7 @@
             </tr>
             <tr>
                 <td><label for="valuestep">Step for increasing value of X:</label></td>
-                <td><input type="number" id="valuestep" name="valuestep" required></td>
+                <td><input type="number" id="valuestep" name="valuestep" min="1" required></td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" value="Submit" onclick="getValues(event)"></td>
@@ -32,37 +32,67 @@
     </form>
     <output id="functionvalues"></output>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.5.1/math.min.js"></script>
 <script>
+    let valuesForX = [];
+    let functionValues = [];
+    let output = document.getElementById("functionvalues");
+
     function getValues() {
-        let valuesForX = [];
-        let functionValues = [];
+        output.innerText = "";
+        valuesForX = [];
+        functionValues = [];
+        let errors = [];
         let inputFunction = document.getElementById("functioninput").value;
-        let output = document.getElementById("functionvalues");
+        
+        function checkValue(value) {
+            if (isNaN(parseFloat(value))) {
+                errors.push("Give the value for X and increase in numbers");
+            }
+        }
+
+        checkValue(document.getElementById("startvalue").value);
+        checkValue(document.getElementById("endvalue").value);
+        checkValue(document.getElementById("valuestep").value);
+
         let startValue = parseFloat(document.getElementById("startvalue").value);
         let endValue = parseFloat(document.getElementById("endvalue").value);
         let stepValue = parseFloat(document.getElementById("valuestep").value);
 
+        if (startValue >= endValue) {
+            errors.push("Starting value of X should be smaller than ending value");
+        }
+
         while (startValue <= endValue) {
             valuesForX.push(startValue);
-            console.log(startvalue);
+            //console.log(startvalue);
             startValue += stepValue;
         }
 
-        for (let x of valuesForX) {
+        if (errors.length > 0) {
+            for (error of errors) {
+                output.innerText += `${error}\n`;
+                output.style.color = "red";
+            }
+        } else
+        {
+            for (let x of valuesForX) {
             console.log(x)
             let funct = inputFunction.replace(/x/gi, x);
             try {
-                //let value = math.evaluate(funct);
-                functionValues.push(eval(funct));
+                let value = math.evaluate(funct).toFixed(2);
+                functionValues.push(value);
             }
             catch {
                 output.innerText = "Check the given function";
-                output.style.color = "red"
+                output.style.color = "red";
             }
         }
 
         for (let y in functionValues) {
             output.innerText += `y(${valuesForX[y]}) = ${functionValues[y]}\n`;
+            output.style.color = "black";
+        }
         }
 
         event.preventDefault();
