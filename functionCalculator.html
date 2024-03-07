@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Calculator</title>
+</head>
+<style>
+</style>
+<body>
+    <form>
+        <table>
+            <tr>
+                <td><label for="functioninput">Function f(x):</label></td>
+                <td><input type="text" id="functioninput" name="functioninput" placeholder="Enter a single variable function" title="Enter a single variable function" required></td>
+            </tr>
+            <tr>
+                <td><label for="startvalue">Start of range for values of X:</label></td>
+                <td><input type="number" id="startvalue" name="startvalue" required></td>
+            </tr>
+            <tr>
+                <td><label for="endvalue">End of range for values of X:</label></td>
+                <td><input type="number" id="endvalue" name="endvalue" required></td>
+            </tr>
+            <tr>
+                <td><label for="valuestep">Step for increasing value of X:</label></td>
+                <td><input type="number" id="valuestep" name="valuestep" required></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="Submit" onclick="getValues(event)"></td>
+            </tr>
+        </table>
+    </form>
+    <output id="functionvalues"></output>
+</body>
+<script>
+    function getValues() {
+        let valuesForX = [];
+        let functionValues = [];
+        let inputFunction = document.getElementById("functioninput").value;
+        let output = document.getElementById("functionvalues");
+        let startValue = parseFloat(document.getElementById("startvalue").value);
+        let endValue = parseFloat(document.getElementById("endvalue").value);
+        let stepValue = parseFloat(document.getElementById("valuestep").value);
+
+        while (startValue <= endValue) {
+            valuesForX.push(startValue);
+            console.log(startvalue);
+            startValue += stepValue;
+        }
+
+        for (let x of valuesForX) {
+            console.log(x)
+            let funct = inputFunction.replace(/x/gi, x);
+            try {
+                //let value = math.evaluate(funct);
+                functionValues.push(eval(funct));
+            }
+            catch {
+                output.innerText = "Check the given function";
+                output.style.color = "red"
+            }
+        }
+
+        for (let y in functionValues) {
+            output.innerText += `y(${valuesForX[y]}) = ${functionValues[y]}\n`;
+        }
+
+        event.preventDefault();
+        return false;
+    };
+</script>
+</html>
