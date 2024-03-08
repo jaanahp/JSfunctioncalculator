@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Function Calculator</title>
@@ -62,44 +62,30 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script>
     let valuesForX = [];
-    let functionValues = [];
-    let output = document.getElementById("functionvalues");
-    let errorOutput = document.getElementById("erroroutput");
+    let valuesForY = [];
     let myChart = null;
 
     function getValues() {
-        output.innerText = "";
+        let errors = [];
+        let valueOutput = document.getElementById("functionvalues");
+        let errorOutput = document.getElementById("erroroutput");
+        let inputFunction = document.getElementById("functioninput").value   
+        let startValueX = parseFloat(document.getElementById("startvalue").value);
+        let endValueX = parseFloat(document.getElementById("endvalue").value);
+        let stepValue = parseFloat(document.getElementById("valuestep").value);
+
+        valueOutput.innerText = "";
         errorOutput.innerText = "";
         valuesForX = [];
-        functionValues = [];
-        let errors = [];
+        valuesForY = [];
 
-        let inputFunction = document.getElementById("functioninput").value   
-        let startValue = document.getElementById("startvalue").value;
-        let endValue = document.getElementById("endvalue").value;
-        let stepValue = document.getElementById("valuestep").value;
-
-        function validateValues(startValue, endValue, stepValue, inputFunction) {
-            let start = parseFloat(startValue);
-            let end = parseFloat(endValue);
-            let step = parseFloat(stepValue);
-
-            if (isNaN(start) || isNaN(end)) {
-                errors.push("Give a numerical value for start X range");
+        function validateValues(condition, errormessage) {
+            if (condition) {
+                errors.push(errormessage);
             }
+        };
 
-            if (isNaN(step) || step <= 0) {
-                errors.push("Step to increase value of X should be a number larger than 0");
-            }
-
-            if(start >= end) {
-                errors.push("Starting value for X should be smaller than ending value");
-            }
-            
-            if (inputFunction == "") {
-                errors.push("Give a valid function with variable X")
-            }
-
+        function validateFunction(inputFunction) {
             try {
                 let funct = inputFunction.replace(/x/gi, 2)
                 let value = math.evaluate(funct)
@@ -107,9 +93,15 @@
             catch {
                 errors.push("Give a valid function with variable X")
             }
-        }
+        };
 
-        validateValues(startValue, endValue, stepValue, inputFunction);        
+        validateValues(isNaN(startValueX), "Give a numerical value for start of X range")
+        validateValues(isNaN(endValueX), "Give a numerical value for end of X range")
+        validateValues(isNaN(stepValue), "Step to increase value of X should be a number")
+        validateValues(stepValue <= 0, "Step to increase value of X should be a number larger than 0")
+        validateValues(startValueX >= endValueX, "Start value for range of X should be smaller than end value")
+        validateValues(inputFunction == "", "Give a valid function with variable X")
+        validateFunction(inputFunction);     
 
         if (errors.length > 0) {
             for (error of errors) {
@@ -118,34 +110,32 @@
             }
         } else
         {
-            let floatStart = parseFloat(startValue);
-            let floatEnd = parseFloat(endValue);
-            let floatStep = parseFloat(stepValue);
-
-            while (floatStart <= floatEnd) {
-                valuesForX.push(floatStart);
-                floatStart += floatStep;
+            while (startValueX <= endValueX) {
+                valuesForX.push(startValueX);
+                startValueX += stepValue;
             }
 
             for (let x of valuesForX) {
                 let funct = inputFunction.replace(/x/gi, x);
                 let value = math.evaluate(funct).toFixed(2);
-                functionValues.push(value);
+                valuesForY.push(value);
             };
             
-            for (let y in functionValues) {
-                output.innerText += `y(${valuesForX[y]}) = ${functionValues[y]}\n`;
-                output.style.color = "black";
+            for (let y in valuesForY) {
+                valueOutput.innerText += `y(${valuesForX[y]}) = ${valuesForY[y]}\n`;
+                valueOutput.style.color = "black";
              }
         }
         
-        if (functionValues.length > 0) {
+        if (valuesForY.length > 0) {
             createChart();
         }
         
         event.preventDefault();
         return false;
     };
+
+    
 
     function createChart() {
         const ctx = document.getElementById('myChart');
@@ -159,7 +149,7 @@
             labels: valuesForX,
             datasets: [{
             label: 'Function values',
-            data: functionValues,
+            data: valuesForY,
             borderWidth: 1,
             lineTension: 0.3
             }]
@@ -168,7 +158,7 @@
             bezierCurve : true,
             scales: {
             y: {
-                beginAtZero: true
+                beginAtZero: false
             }
             }
         }
