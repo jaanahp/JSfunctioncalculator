@@ -46,7 +46,7 @@
             </tr>
             <tr>
                 <div class="mb-3"></div>
-                    <td colspan="2"><input class="btn btn-success" type="submit" value="Calculate" onclick="getValues(event)"></td>
+                    <td colspan="2"><input class="btn btn-success" type="submit" value="Calculate" onclick="createValueArrays(event)"></td>
                 </div>
             </tr>
         </table>
@@ -61,13 +61,36 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script>
-    let valuesForX = [];
+       let valuesForX = [];
     let valuesForY = [];
     let myChart = null;
+    let errors = [];
+    let valueOutput = document.getElementById("functionvalues");
 
-    function getValues() {
-        let errors = [];
-        let valueOutput = document.getElementById("functionvalues");
+    function validateValues(condition, errormessage) {
+            if (condition) {
+                errors.push(errormessage);
+            }
+        };
+
+    function validateFunction(inputFunction) {
+        try {
+            let funct = inputFunction.replace(/x/gi, 2)
+            let value = math.evaluate(funct)
+        }
+        catch {
+            errors.push("Give a valid function with variable X")
+        }
+    };
+
+    function printYValues() {
+        for (let y in valuesForY) {
+                valueOutput.innerText += `y(${valuesForX[y]}) = ${valuesForY[y]}\n`;
+                valueOutput.style.color = "black";
+        }
+    }
+
+    function createValueArrays() {
         let errorOutput = document.getElementById("erroroutput");
         let inputFunction = document.getElementById("functioninput").value   
         let startValueX = parseFloat(document.getElementById("startvalue").value);
@@ -78,22 +101,7 @@
         errorOutput.innerText = "";
         valuesForX = [];
         valuesForY = [];
-
-        function validateValues(condition, errormessage) {
-            if (condition) {
-                errors.push(errormessage);
-            }
-        };
-
-        function validateFunction(inputFunction) {
-            try {
-                let funct = inputFunction.replace(/x/gi, 2)
-                let value = math.evaluate(funct)
-            }
-            catch {
-                errors.push("Give a valid function with variable X")
-            }
-        };
+        errors = [];
 
         validateValues(isNaN(startValueX), "Give a numerical value for start of X range")
         validateValues(isNaN(endValueX), "Give a numerical value for end of X range")
@@ -120,11 +128,8 @@
                 let value = math.evaluate(funct).toFixed(2);
                 valuesForY.push(value);
             };
-            
-            for (let y in valuesForY) {
-                valueOutput.innerText += `y(${valuesForX[y]}) = ${valuesForY[y]}\n`;
-                valueOutput.style.color = "black";
-             }
+
+            printYValues();
         }
         
         if (valuesForY.length > 0) {
@@ -135,7 +140,6 @@
         return false;
     };
 
-    
 
     function createChart() {
         const ctx = document.getElementById('myChart');
@@ -164,6 +168,5 @@
         }
         });
     }
-
 </script>
 </html>
