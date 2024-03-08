@@ -61,7 +61,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script>
-    //ensin luodaan tyhjät taulukot, jotta ne näkyy molempiin funktioihin
     let valuesForX = [];
     let functionValues = [];
     let output = document.getElementById("functionvalues");
@@ -69,7 +68,6 @@
     let myChart = null;
 
     function getValues() {
-        //kun klikataan submit, tyhjennetään outputin tekstit sekä luodut taulukot ja haetaan annettu funktio
         output.innerText = "";
         errorOutput.innerText = "";
         valuesForX = [];
@@ -81,31 +79,27 @@
         let endValue = document.getElementById("endvalue").value;
         let stepValue = document.getElementById("valuestep").value;
 
-        //virheentarkistus toimii, saisiko tätä yksinkertaistettua?
-
         function validateValues(startValue, endValue, stepValue, inputFunction) {
             let start = parseFloat(startValue);
             let end = parseFloat(endValue);
             let step = parseFloat(stepValue);
 
-            if(isNaN(start)) {
+            if (isNaN(start) || isNaN(end)) {
                 errors.push("Give a numerical value for start X range");
             }
-            if(isNaN(end)) {
-                errors.push("Give a numerical value for end X range");
+
+            if (isNaN(step) || step <= 0) {
+                errors.push("Step to increase value of X should be a number larger than 0");
             }
-            if(isNaN(step)) {
-                errors.push("Give a numerical value for step of X increase");
-            }
-            if (step <= 0) {
-                errors.push("Step to increase value of X should be larger than 0");
-            }
-            if(start > end) {
+
+            if(start >= end) {
                 errors.push("Starting value for X should be smaller than ending value");
             }
+            
             if (inputFunction == "") {
                 errors.push("Give a valid function with variable X")
             }
+
             try {
                 let funct = inputFunction.replace(/x/gi, 2)
                 let value = math.evaluate(funct)
@@ -124,30 +118,19 @@
             }
         } else
         {
-            //tässä vielä muutetaan floateiksi?
             let floatStart = parseFloat(startValue);
             let floatEnd = parseFloat(endValue);
             let floatStep = parseFloat(stepValue);
 
             while (floatStart <= floatEnd) {
                 valuesForX.push(floatStart);
-                //console.log(`startvalue = ${startvalue}`);
                 floatStart += floatStep;
             }
 
             for (let x of valuesForX) {
-                //console.log(`x = ${x}`);
                 let funct = inputFunction.replace(/x/gi, x);
-
-                try {
-                    let value = math.evaluate(funct).toFixed(2);
-                    //console.log(`value = ${value}`);
-                    functionValues.push(value);
-                }
-                catch {
-                    errorOutput.innerText = "Check the given function";
-                    errorOutput.style.color = "red";
-                }
+                let value = math.evaluate(funct).toFixed(2);
+                functionValues.push(value);
             };
             
             for (let y in functionValues) {
@@ -191,6 +174,6 @@
         }
         });
     }
-    //createChart();
+
 </script>
 </html>
