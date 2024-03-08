@@ -61,7 +61,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script>
-       let valuesForX = [];
+    let valuesForX = [];
     let valuesForY = [];
     let myChart = null;
     let errors = [];
@@ -71,15 +71,15 @@
             if (condition) {
                 errors.push(errormessage);
             }
-        };
+    };
 
     function validateFunction(inputFunction) {
         try {
-            let funct = inputFunction.replace(/x/gi, 2)
-            let value = math.evaluate(funct)
+            let funct = inputFunction.replace(/x/gi, 2);
+            let value = math.evaluate(funct);
         }
         catch {
-            errors.push("Give a valid function with variable X")
+            errors.push("Give a valid function with variable X");
         }
     };
 
@@ -88,7 +88,7 @@
                 valueOutput.innerText += `y(${valuesForX[y]}) = ${valuesForY[y]}\n`;
                 valueOutput.style.color = "black";
         }
-    }
+    };
 
     function createValueArrays() {
         let errorOutput = document.getElementById("erroroutput");
@@ -103,12 +103,12 @@
         valuesForY = [];
         errors = [];
 
-        validateValues(isNaN(startValueX), "Give a numerical value for start of X range")
-        validateValues(isNaN(endValueX), "Give a numerical value for end of X range")
-        validateValues(isNaN(stepValue), "Step to increase value of X should be a number")
-        validateValues(stepValue <= 0, "Step to increase value of X should be a number larger than 0")
-        validateValues(startValueX >= endValueX, "Start value for range of X should be smaller than end value")
-        validateValues(inputFunction == "", "Give a valid function with variable X")
+        validateValues(isNaN(startValueX), "Give a numerical value for start of X range");
+        validateValues(isNaN(endValueX), "Give a numerical value for end of X range");
+        validateValues(isNaN(stepValue), "Step to increase value of X should be a number");
+        validateValues(stepValue <= 0, "Step to increase value of X should be a number larger than 0");
+        validateValues(startValueX >= endValueX, "Start value for range of X should be smaller than end value");
+        validateValues(inputFunction == "", "Give a valid function with variable X");
         validateFunction(inputFunction);     
 
         if (errors.length > 0) {
@@ -121,7 +121,7 @@
             while (startValueX <= endValueX) {
                 valuesForX.push(startValueX);
                 startValueX += stepValue;
-            }
+            };
 
             for (let x of valuesForX) {
                 let funct = inputFunction.replace(/x/gi, x);
