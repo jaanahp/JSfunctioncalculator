@@ -67,6 +67,12 @@
     let errors = [];
     let valueOutput = document.getElementById("functionvalues");
 
+    function createFuntion(inputFunction, xvalue) {
+        let funct = inputFunction.replace(/x/gi, xvalue);
+        funct = funct.replace(",", ".");
+        return funct;
+    };
+
     function validateValues(condition, errormessage) {
             if (condition) {
                 errors.push(errormessage);
@@ -75,8 +81,8 @@
 
     function validateFunction(inputFunction) {
         try {
-            let funct = inputFunction.replace(/x/gi, 2);
-            let value = math.evaluate(funct);
+            let testfunction = createFuntion(inputFunction, 2);
+            let value = math.evaluate(testfunction);
         }
         catch {
             errors.push("Give a valid function with variable X");
@@ -124,7 +130,7 @@
             };
 
             for (let x of valuesForX) {
-                let funct = inputFunction.replace(/x/gi, x);
+                let funct = createFuntion(inputFunction, x);
                 let value = math.evaluate(funct).toFixed(2);
                 valuesForY.push(value);
             };
