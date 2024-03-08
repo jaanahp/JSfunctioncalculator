@@ -65,11 +65,13 @@
     let valuesForX = [];
     let functionValues = [];
     let output = document.getElementById("functionvalues");
+    let errorOutput = document.getElementById("erroroutput");
     let myChart = null;
 
     function getValues() {
         //kun klikataan submit, tyhjennetään outputin tekstit sekä luodut taulukot ja haetaan annettu funktio
         output.innerText = "";
+        errorOutput.innerText = "";
         valuesForX = [];
         functionValues = [];
         let errors = [];
@@ -95,10 +97,15 @@
             if(isNaN(step)) {
                 errors.push("Give a numerical value for step of X increase");
             }
+            if (step <= 0) {
+                errors.push("Step to increase value of X should be larger than 0");
+            }
             if(start > end) {
                 errors.push("Starting value for X should be smaller than ending value");
             }
-
+            if (inputFunction == "") {
+                errors.push("Give a valid function with variable X")
+            }
             try {
                 let funct = inputFunction.replace(/x/gi, 2)
                 let value = math.evaluate(funct)
@@ -112,8 +119,8 @@
 
         if (errors.length > 0) {
             for (error of errors) {
-                output.innerText += `${error}\n`;
-                output.style.color = "red";
+                errorOutput.innerText += `${error}\n`;
+                errorOutput.style.color = "red";
             }
         } else
         {
@@ -123,9 +130,9 @@
             let floatStep = parseFloat(stepValue);
 
             while (floatStart <= floatEnd) {
-            valuesForX.push(floatStart);
-            //console.log(`startvalue = ${startvalue}`);
-            floatStart += floatStep;
+                valuesForX.push(floatStart);
+                //console.log(`startvalue = ${startvalue}`);
+                floatStart += floatStep;
             }
 
             for (let x of valuesForX) {
@@ -138,8 +145,8 @@
                     functionValues.push(value);
                 }
                 catch {
-                    output.innerText = "Check the given function";
-                    output.style.color = "red";
+                    errorOutput.innerText = "Check the given function";
+                    errorOutput.style.color = "red";
                 }
             };
             
